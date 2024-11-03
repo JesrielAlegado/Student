@@ -22,55 +22,56 @@ public class config {
         return con;
     }
     
-    public void addRecord(String sql, Object... values) {
-        try (Connection conn = config.connectDB(); // Use the connectDB method
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+  public void addRecord(String sql, Object... values) {
+    try (Connection conn = config.connectDB(); // Use the connectDB method
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Loop through the values and set them in the prepared statement dynamically
-            for (int i = 0; i < values.length; i++) {
-                if (values[i] instanceof Integer) {
-                    pstmt.setInt(i + 1, (Integer) values[i]); // If the value is Integer
-                } else if (values[i] instanceof Double) {
-                    pstmt.setDouble(i + 1, (Double) values[i]); // If the value is Double
-                } else if (values[i] instanceof Float) {
-                    pstmt.setFloat(i + 1, (Float) values[i]); // If the value is Float
-                } else if (values[i] instanceof Long) {
-                    pstmt.setLong(i + 1, (Long) values[i]); // If the value is Long
-                } else if (values[i] instanceof Boolean) {
-                    pstmt.setBoolean(i + 1, (Boolean) values[i]); // If the value is Boolean
-                } else if (values[i] instanceof java.util.Date) {
-                    pstmt.setDate(i + 1, new java.sql.Date(((java.util.Date) values[i]).getTime())); // If the value is Date
-                } else if (values[i] instanceof java.sql.Date) {
-                    pstmt.setDate(i + 1, (java.sql.Date) values[i]); // If it's already a SQL Date
-                } else if (values[i] instanceof java.sql.Timestamp) {
-                    pstmt.setTimestamp(i + 1, (java.sql.Timestamp) values[i]); // If the value is Timestamp
-                } else {
-                    pstmt.setString(i + 1, values[i].toString()); // Default to String for other types
-                }
+        // Loop through the values and set them in the prepared statement dynamically
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Integer) {
+                pstmt.setInt(i + 1, (Integer) values[i]); // If the value is Integer
+            } else if (values[i] instanceof Double) {
+                pstmt.setDouble(i + 1, (Double) values[i]); // If the value is Double
+            } else if (values[i] instanceof Float) {
+                pstmt.setFloat(i + 1, (Float) values[i]); // If the value is Float
+            } else if (values[i] instanceof Long) {
+                pstmt.setLong(i + 1, (Long) values[i]); // If the value is Long
+            } else if (values[i] instanceof Boolean) {
+                pstmt.setBoolean(i + 1, (Boolean) values[i]); // If the value is Boolean
+            } else if (values[i] instanceof java.util.Date) {
+                pstmt.setDate(i + 1, new java.sql.Date(((java.util.Date) values[i]).getTime())); // If the value is Date
+            } else if (values[i] instanceof java.sql.Date) {
+                pstmt.setDate(i + 1, (java.sql.Date) values[i]); // If it's already a SQL Date
+            } else if (values[i] instanceof java.sql.Timestamp) {
+                pstmt.setTimestamp(i + 1, (java.sql.Timestamp) values[i]); // If the value is Timestamp
+            } else {
+                pstmt.setString(i + 1, values[i].toString()); // Default to String for other types
             }
-
-            pstmt.executeUpdate();
-            System.out.println("Record added successfully!");
-        } catch (SQLException e) {
-            System.out.println("Error adding record: " + e.getMessage());
         }
-    }
 
-    // Dynamic view method to display records from any table
+        pstmt.executeUpdate();
+        System.out.println("Record added successfully!\n");
+    } catch (SQLException e) {
+        System.out.println("Error adding record: " + e.getMessage());
+    }
+}
+
+
+ // Dynamic view method to display records from any table
     public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
-        
+        // Check that columnHeaders and columnNames arrays are the same length
         if (columnHeaders.length != columnNames.length) {
             System.out.println("Error: Mismatch between column headers and column names.");
             return;
         }
-        
-        try (Connection conn = config.connectDB();
+
+         try (Connection conn = config.connectDB();
             PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-            ResultSet rs = pstmt.executeQuery()) { 
+            ResultSet rs = pstmt.executeQuery();) {
            
             StringBuilder headerLine = new StringBuilder();
             
-            int spacing = 17;
+            int spacing = 20;
             int lineLength = columnHeaders.length * (spacing + 3) + 1;
             
             for (int i = 0; i < lineLength; i++) {
@@ -107,9 +108,11 @@ public class config {
         }
     }
     
+    
     //-----------------------------------------------
     // UPDATE METHOD
     //-----------------------------------------------
+    
     public void updateRecord(String sql, Object... values) {
         try (Connection conn = config.connectDB(); // Use the connectDB method
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -144,24 +147,79 @@ public class config {
         }
     }
     
-    // Add this method in the config class
-    public void deleteRecord(String sql, Object... values) {
-        try (Connection conn = config.connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+// Add this method in the config class
+public void deleteRecord(String sql, Object... values) {
+    try (Connection conn = this.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Loop through the values and set them in the prepared statement dynamically
-            for (int i = 0; i < values.length; i++) {
-                if (values[i] instanceof Integer) {
-                    pstmt.setInt(i + 1, (Integer) values[i]); // If the value is Integer
-                } else {
-                    pstmt.setString(i + 1, values[i].toString()); // Default to String for other types
-                }
+        // Loop through the values and set them in the prepared statement dynamically
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Integer) {
+                pstmt.setInt(i + 1, (Integer) values[i]); // If the value is Integer
+            } else {
+                pstmt.setString(i + 1, values[i].toString()); // Default to String for other types
             }
+        }
 
-            pstmt.executeUpdate();
-            System.out.println("Record deleted successfully!");
-        } catch (SQLException e) {
-            System.out.println("Error deleting record: " + e.getMessage());
+        pstmt.executeUpdate();
+        System.out.println("Record deleted successfully!");
+    } catch (SQLException e) {
+        System.out.println("Error deleting record: " + e.getMessage());
+    }
+}
+
+  //-----------------------------------------------
+    // Helper Method for Setting PreparedStatement Values
+    //-----------------------------------------------
+    private void setPreparedStatementValues(PreparedStatement pstmt, Object... values) throws SQLException {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Integer) {
+                pstmt.setInt(i + 1, (Integer) values[i]);
+            } else if (values[i] instanceof Double) {
+                pstmt.setDouble(i + 1, (Double) values[i]);
+            } else if (values[i] instanceof Float) {
+                pstmt.setFloat(i + 1, (Float) values[i]);
+            } else if (values[i] instanceof Long) {
+                pstmt.setLong(i + 1, (Long) values[i]);
+            } else if (values[i] instanceof Boolean) {
+                pstmt.setBoolean(i + 1, (Boolean) values[i]);
+            } else if (values[i] instanceof java.util.Date) {
+                pstmt.setDate(i + 1, new java.sql.Date(((java.util.Date) values[i]).getTime()));
+            } else if (values[i] instanceof java.sql.Date) {
+                pstmt.setDate(i + 1, (java.sql.Date) values[i]);
+            } else if (values[i] instanceof java.sql.Timestamp) {
+                pstmt.setTimestamp(i + 1, (java.sql.Timestamp) values[i]);
+            } else {
+                pstmt.setString(i + 1, values[i].toString());
+            }
         }
     }
+
+  //-----------------------------------------------
+    // GET SINGLE VALUE METHOD
+    //-----------------------------------------------
+
+    public double getSingleValue(String sql, Object... params) {
+        double result = 0.0;
+        try (Connection conn = connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            setPreparedStatementValues(pstmt, params);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                result = rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving single value: " + e.getMessage());
+        }
+        return result;
+    }
+
+    
+    
+    
+    
+   
 }
