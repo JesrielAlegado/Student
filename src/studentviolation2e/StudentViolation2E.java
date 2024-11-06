@@ -1,4 +1,5 @@
 package studentviolation2e;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -8,18 +9,19 @@ public class StudentViolation2E {
         Scanner sc = new Scanner(System.in);
         
         Student st = new Student();
+        Violation vio = new Violation();
+        
         
         int op = -1; 
         
         do {
             try {
-                System.out.println("\n------------------------------------------------");
-                System.out.println("       1WELCOME TO STUDENT VIOLATION SYSTEM      ");
-                System.out.println("------------------------------------------------");
+                System.out.println("       WELCOME TO STUDENT VIOLATION SYSTEM      ");
    
 
                 System.out.println("1. STUDENTS ");
-                System.out.println("2. EXIT ");
+                System.out.println("2. VIOLATIONS");
+                System.out.println("3. EXIT ");
 
                 System.out.print("\nSelect an Option: ");
                 op = sc.nextInt();
@@ -29,8 +31,11 @@ public class StudentViolation2E {
                     case 1:
                         st.sTransactions();
                         break;
-
+                    
                     case 2:
+                        vio.VTransactions();
+                    
+                    case 3:
                         System.out.println("Exiting....");
                         break;
 

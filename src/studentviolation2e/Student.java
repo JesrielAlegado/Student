@@ -14,7 +14,7 @@ public class Student {
             System.out.println("2. VIEW");
             System.out.println("3. UPDATE");
             System.out.println("4. DELETE");
-            System.out.println("5. EXIT");
+            System.out.println("5. BACK TO MAIN MENU");
 
             System.out.print("\nENTER action: ");
             action = sc.nextInt();
@@ -22,28 +22,28 @@ public class Student {
 
             switch(action) {
                 case 1:
-                    addStudentviolation();
+                    addStudent();
+                    viewStudent();
                     break;
                     
                 case 2:
-                    viewStudentviolation();
+                    viewStudent();
                     break;
                     
                 case 3:
-                    viewStudentviolation();
-                    updateStudentviolation();
-                    viewStudentviolation();
+                    viewStudent();
+                    updateStudent();
+                    viewStudent();
                     break;
                     
                 case 4:
-                    viewStudentviolation();
-                    deleteStudentViolation();
-                    viewStudentviolation();
+                    viewStudent();
+                    deleteStudent();
+                    viewStudent();
                     break;
-                    
+         
                 case 5:
-                    System.out.println("\nExiting...");
-                    sc.close();  
+                    System.out.println("\nGoing Back to Main Menu...");
                     break;
                     
                 default:
@@ -52,30 +52,30 @@ public class Student {
         } while(action != 5);
     }
     
-    public void addStudentviolation() {
+    public void addStudent() {
         String fname = promptValidFirstName();
         String lname = promptValidLastName();
         String program = promptValidProgram();
-        String violation = promptValidViolation();
+        String status = promptValidStatus();  // Prompt for status
         String date = promptValidDate();
         
-        String sql = "INSERT INTO s_sv (s_fname, s_lname, Program, Violation, Date) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO s_sv (s_fname, s_lname, Program, Status, Date) VALUES (?, ?, ?, ?, ?, ?)";
         
-        conf.addRecord(sql, fname, lname, program, violation, date);
+        conf.addRecord(sql, fname, lname, program, status, date);
         System.out.println("Record added successfully.\n");
     }
     
-    public void viewStudentviolation() {
+    public void viewStudent() {
         System.out.println("");
         String qry= "SELECT * FROM s_sv";
-        String[] hrds = {"ID", "First Name", "Last Name", "Program", "Violation", "Date"};
-        String[] clmns = {"ID", "s_fname", "s_lname", "Program", "Violation", "Date"};
+        String[] hrds = {"ID", "First Name", "Last Name", "Program", "Date", "Status"};
+        String[] clmns = {"ID", "s_fname", "s_lname", "Program", "Date", "status"};
         
         conf.viewRecords(qry, hrds, clmns);
         System.out.println("");
    }   
-  
-    public void updateStudentviolation() {
+    
+    public void updateStudent() {
         System.out.print("Enter ID to Update: ");
         int id = sc.nextInt();
         sc.nextLine();
@@ -90,16 +90,16 @@ public class Student {
         String fname = promptValidFirstName();
         String lname = promptValidLastName();
         String program = promptValidProgram();
-        String violation = promptValidViolation();
+        String status = promptValidStatus();  // Prompt for status during update
         String date = promptValidDate();
         
-        String sqlUpdate =  "UPDATE s_sv SET s_fname = ?, s_lname = ?, Program = ?, Violation = ?, Date = ? WHERE ID = ?";
+        String sqlUpdate =  "UPDATE s_sv SET s_fname = ?, s_lname = ?, Program = ?, Violation = ?, Date = ?, Status = ? WHERE ID = ?";
         
-        conf.updateRecord(sqlUpdate, fname, lname, program, violation, date, id);
+        conf.updateRecord(sqlUpdate, fname, lname, program, date, status, id);
         System.out.println("Record updated successfully.\n");
     }
         
-    public void deleteStudentViolation() {
+    public void deleteStudent() {
         System.out.print("Enter ID to Delete: ");
         int id = sc.nextInt();
         sc.nextLine(); 
@@ -115,7 +115,6 @@ public class Student {
         conf.deleteRecord(qry, id);
         System.out.println("Record deleted successfully.");
     }
-
 
     private String promptValidFirstName() {
         String fname;
@@ -144,15 +143,6 @@ public class Student {
         return program;
     }
 
-    private String promptValidViolation() {
-        String violation;
-        do {
-            System.out.print("Enter New Violation (must not be empty): ");
-            violation = sc.nextLine();
-        } while (violation.isEmpty());
-        return violation;
-    }
-
     private String promptValidDate() {
         String date;
         do {
@@ -161,6 +151,15 @@ public class Student {
         } while (!isValidDate(date));
         return date;
     }
+    
+    private String promptValidStatus() {
+        String status;
+        do {
+            System.out.print("Enter Status (Active, Resolved, Under Investigation): ");
+            status = sc.nextLine();
+        } while (!isValidStatus(status));
+        return status;
+    }
 
     private boolean isValidName(String name) {
         return Pattern.matches("^[A-Za-z]+$", name);
@@ -168,5 +167,16 @@ public class Student {
 
     private boolean isValidDate(String date) {
         return Pattern.matches("^\\d{4}-\\d{2}-\\d{2}$", date);
+    }
+
+    private boolean isValidStatus(String status) {
+        // Check if the entered status is one of the valid statuses
+        String[] validStatuses = {"Active", "Resolved", "Under Investigation"};
+        for (String validStatus : validStatuses) {
+            if (validStatus.equalsIgnoreCase(status)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

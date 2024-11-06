@@ -1,3 +1,4 @@
+
 package studentviolation2e;
 
 import java.sql.Connection;
@@ -10,19 +11,19 @@ import java.sql.SQLException;
 public class config {
     
     //Connection Method to SQLITE
-    public static Connection connectDB() {
+public static Connection connectDB() {
         Connection con = null;
         try {
             Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
             con = DriverManager.getConnection("jdbc:sqlite:student.db"); // Establish connection
-            System.out.println("\nConnection Successful");
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Connection Failed: " + e);
         }
         return con;
     }
-    
-  public void addRecord(String sql, Object... values) {
+
+
+public void addRecord(String sql, Object... values) {
     try (Connection conn = config.connectDB(); // Use the connectDB method
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
