@@ -1,169 +1,206 @@
 package studentviolation2e;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Violation {
     Scanner sc = new Scanner(System.in);
     config conf = new config();
 
-    public void VTransactions() {
-        int act;
+    public void viotransac() {
+        int action;
+     do {
+        try {
+            System.out.println("1. ADD");
+            System.out.println("2. VIEW");
+            System.out.println("3. UPDATE");
+            System.out.println("4. DELETE");
+            System.out.println("5. BACK TO MAIN MENU");
 
-        do {
-            try {
-                System.out.println("1. Add Violation");
-                System.out.println("2. View Violation");
-                System.out.println("3. Update Violation");
-                System.out.println("4. Delete Violation");
-                System.out.println("5. Back to Main Menu");
+            System.out.print("\nEnter action: ");
+            action = sc.nextInt();
+            sc.nextLine();
 
-                System.out.print("\nPlease Choose an Option: ");
-                act = sc.nextInt();
-                sc.nextLine();  // Consume newline after nextInt()
+            switch(action) {
+                case 1:
+                    addViolation();
+                    viewViolation();
+                    break;
 
-                switch (act) {
-                    case 1:
-                        addViolation();
+                case 2:
+                    viewViolation();
+                    break;
+
+                case 3:
+                    viewViolation();
+                    updateViolation();
+                    viewViolation();
+                    break;
+
+                case 4:
+                    viewViolation();
+                    deleteViolation();
+                    viewViolation();
+                    break;
+
+                case 5:
+                        System.out.println("Going Back to Main Menu...");
                         break;
-
-                    case 2:
-                        viewViolation();
-                        break;
-
-                    case 3:
-                        viewViolation();
-                        updateViolation();
-                        viewViolation();
-                        break;
-
-                    case 4:
-                        viewViolation();
-                        deleteViolation();
-                        viewViolation();
-                        break;
-
-                    case 5:
-                        System.out.println("Returning to the main menu...");
-                        break;
-
+                    
                     default:
-                        System.out.println("Invalid Option.");
+                        System.out.println("Invalid option.");
                 }
-
+                
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                sc.nextLine(); // Clear the buffer
-                act = -1;  // Reset the action to -1 to allow retry
+                sc.nextLine();
+                action = -1;
             }
-        } while (act != 5);  // Repeat until the user selects "5"
+        } while(action != 5);
     }
 
-    private void addViolation() {
-        Student stud = new Student();
-        stud.viewStudent(); // Display students before selecting
-
-        System.out.print("Enter Student ID: ");
-        int id = sc.nextInt();
-
-        String csql = "SELECT ID FROM s_sv WHERE ID = ?";
-        while (conf.getSingleValue(csql, id) == 0) {
-            System.out.println("Selected ID doesn't exist! ");
-            System.out.print("Select Student Id Again: ");
-            id = sc.nextInt();
-            sc.nextLine();  // Consume newline after nextInt()
+    public void addViolation() {
+        String viotype;
+        while (true) {
+            System.out.print("Enter Violation Type: ");
+            viotype = sc.nextLine();
+            if (viotype.trim().isEmpty()) {
+                System.out.println("Violation type cannot be empty. Please enter a valid violation type.\n");
+            } else {
+                break;
+            }
         }
 
-        sc.nextLine();  // Clear buffer before reading strings
+        String date = "";
+        while (true) {
+            System.out.print("Enter Date (YYYY-MM-DD format): ");
+            date = sc.nextLine();
 
-        System.out.print("Enter Teacher: ");
-        String teach = sc.nextLine();
+            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
+            Pattern pattern = Pattern.compile(dateRegex);
+            Matcher matcher = pattern.matcher(date);
 
-        System.out.print("Enter Reported by: ");
-        String reported = sc.nextLine();
+            if (!matcher.matches()) {
+                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
+                continue;
+            }
 
-        System.out.print("Enter Description: ");
-        String desc = sc.nextLine();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            try {
+                sdf.parse(date);
+                break;
+            } catch (ParseException e) {
+                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
+            }
+        }
 
-        System.out.print("Enter Consequences: ");
-        String con = sc.nextLine();
+        String sever;
+        while (true) {
+            System.out.print("Enter Severity: ");
+            sever = sc.nextLine();
+            if (sever.trim().isEmpty()) {
+                System.out.println("Severity cannot be empty. Please enter a valid severity.\n");
+            } else {
+                break;
+            }
+        }
 
-        String status = "Pending";
-
-        // SQL query to insert violation record
-        String bookqry = "INSERT INTO violation (v_id, ID, teacher, reportedby, description, consequences, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        conf.addRecord(bookqry, id, teach, reported, desc, con, status);
+        String sql = "INSERT INTO VIOLATION (vio_type, date, severity) VALUES (?, ?, ?)";
+        conf.addRecord(sql, viotype, date, sever);
     }
 
-    private void viewViolation() {
-        String qry = "SELECT v_id, s_fname, s_lname, teacher, reportedby, description, consequences, status FROM violation "
-                + "LEFT JOIN s_sv ON s_sv.ID = violation.ID";
-
-        String[] header = {"VID", "Student First Name", "Student Last Name", "Teacher", "Reportedby", "Description", "Consequences", "Status"};
-        String[] column = {"v_id", "s_fname", "s_lname", "teacher", "reportedby", "description", "consequences", "status"};
-
+    public void viewViolation() {
+        System.out.println("");
+        System.out.println("====================================== VIOLATION LIST =======================================");
+        String qry = "SELECT * FROM VIOLATION";
+        String[] header = {"ID", "Violation Type", "Date", "Severity"};
+        String[] column = {"v_id", "vio_type", "date", "severity"};
         conf.viewRecords(qry, header, column);
     }
 
     private void updateViolation() {
-        System.out.print("Enter Violation ID to Update: ");
-        int v_id = sc.nextInt();
+        System.out.print("Enter ID to Update: ");
+        int vid = sc.nextInt();
+        sc.nextLine();
 
-        // Validate if the violation ID exists
-        while (conf.getSingleValue("SELECT v_id FROM violation WHERE v_id = ?", v_id) == 0) {
-            System.out.println("Selected Violation ID doesn't exist! ");
+        while(conf.getSingleValue("SELECT v_id FROM VIOLATION WHERE v_id = ?", vid) == 0) {
+            System.out.println("Selected ID doesn't exist! ");
             System.out.print("Select Violation Id Again: ");
-            v_id = sc.nextInt();
-            sc.nextLine();  // Consume newline after nextInt()
+            vid = sc.nextInt();
+            sc.nextLine();
         }
 
-        sc.nextLine();  // Clear buffer before reading strings
-
-        System.out.print("Enter Student ID: ");
-        int sid = sc.nextInt();
-
-        // Validate if the student ID exists
-        String csql = "SELECT ID FROM s_sv WHERE ID = ?";
-        while (conf.getSingleValue(csql, sid) == 0) {
-            System.out.println("Selected Student ID doesn't exist! ");
-            System.out.print("Select Student Id Again: ");
-            sid = sc.nextInt();
-            sc.nextLine();  // Consume newline after nextInt()
+        String viotype;
+        while (true) {
+            System.out.print("Enter Violation Type: ");
+            viotype = sc.nextLine();
+            if (viotype.trim().isEmpty()) {
+                System.out.println("Violation type cannot be empty. Please enter a valid violation type.\n");
+            } else {
+                break;
+            }
         }
 
-        sc.nextLine();  // Clear buffer before reading strings
+        String date = "";
+        while (true) {
+            System.out.print("Enter Date (YYYY-MM-DD format): ");
+            date = sc.nextLine();
 
-        System.out.print("Enter Teacher: ");
-        String teach = sc.nextLine();
+            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
+            Pattern pattern = Pattern.compile(dateRegex);
+            Matcher matcher = pattern.matcher(date);
 
-        System.out.print("Enter Reported by: ");
-        String reported = sc.nextLine();
+            if (!matcher.matches()) {
+                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
+                continue;
+            }
 
-        System.out.print("Enter Description: ");
-        String desc = sc.nextLine();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            try {
+                sdf.parse(date);
+                break;
+            } catch (ParseException e) {
+                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
+            }
+        }
 
-        System.out.print("Enter Consequences: ");
-        String con = sc.nextLine();
+        String sever;
+        while (true) {
+            System.out.print("Enter Severity: ");
+            sever = sc.nextLine();
+            if (sever.trim().isEmpty()) {
+                System.out.println("Severity cannot be empty. Please enter a valid severity.\n");
+            } else {
+                break;
+            }
+        }
 
-        // Update violation record in the database
-        String qry = "UPDATE violation SET ID = ?, teacher = ?, reportedby = ?, description = ?, consequences = ?, status = ? WHERE v_id = ?";
-        conf.updateRecord(qry, sid, teach, reported, desc, con, "Pending", v_id);
+        String qry = "UPDATE VIOLATION SET vio_type = ?, date = ?, severity = ? WHERE v_id = ?";
+        conf.updateRecord(qry, viotype, date, sever, vid);
     }
 
     private void deleteViolation() {
-        System.out.print("Enter Violation ID to Delete: ");
-        int v_id = sc.nextInt();
+        System.out.print("Enter ID to Delete: ");
+        int vid = sc.nextInt();
+        sc.nextLine();
 
-        // Validate if the violation ID exists
-        while (conf.getSingleValue("SELECT v_id FROM violation WHERE v_id = ?", v_id) == 0) {
-            System.out.println("Selected Violation ID doesn't exist! ");
+        while(conf.getSingleValue("SELECT v_id FROM VIOLATION WHERE v_id = ?", vid) == 0) {
+            System.out.println("Selected ID doesn't exist! ");
             System.out.print("Select Violation Id Again: ");
-            v_id = sc.nextInt();
-            sc.nextLine();  // Consume newline after nextInt()
+            vid = sc.nextInt();
+            sc.nextLine();
         }
 
-        // SQL query to delete violation record
-        String qry = "DELETE FROM violation WHERE v_id = ?";
-        conf.deleteRecord(qry, v_id);
+        String qry = "DELETE FROM VIOLATION WHERE v_id = ?";
+        conf.deleteRecord(qry, vid);
     }
 }

@@ -8,34 +8,52 @@ public class StudentViolation2E {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-        Student st = new Student();
+        Students st = new Students();
+        Staff sts = new Staff();
         Violation vio = new Violation();
-        
-        
+        Violation_Record viorec = new Violation_Record();
+        Report rep = new Report();
         int op = -1; 
         
         do {
             try {
-                System.out.println("       WELCOME TO STUDENT VIOLATION SYSTEM      ");
+                System.out.println("\n------------------------------------------------------------");
+                System.out.println("       ==== WELCOME TO STUDENT VIOLATION SYSTEM ====     ");
+                System.out.println("------------------------------------------------------------");
    
-
                 System.out.println("1. STUDENTS ");
-                System.out.println("2. VIOLATIONS");
-                System.out.println("3. EXIT ");
-
+                System.out.println("2. STAFF");
+                System.out.println("3. VIOLATION ");
+                System.out.println("4. VIOLATION RECORD ");
+                System.out.println("5. REPORT ");
+                System.out.println("6. EXIT");
+                
                 System.out.print("\nSelect an Option: ");
                 op = sc.nextInt();
-                sc.nextLine(); 
+                sc.nextLine();
 
                 switch (op) {
                     case 1:
-                        st.sTransactions();
+                        st.sTransaction();
                         break;
                     
                     case 2:
-                        vio.VTransactions();
-                    
+                        sts.stafftransac();
+                        break;
+                        
                     case 3:
+                        vio.viotransac();
+                        break;
+
+                    case 4:
+                        viorec.viorec();
+                        break;
+
+                    case 5:
+                        rep.ReportTransaction();
+                        break;
+                        
+                    case 6:
                         System.out.println("Exiting....");
                         break;
 
@@ -44,13 +62,12 @@ public class StudentViolation2E {
                 }
 
             } catch (InputMismatchException e) {
-                System.out.print("Invalid input. Please enter a valid number.");
-                sc.nextLine();  
-                op = -1;  
+                System.out.println("Invalid input. Please enter a valid number.");
+                sc.nextLine();
+                op = -1;
             }
-        } while (op != 2);
+        } while (op != 6);
 
-        sc.close(); 
+        sc.close();
     }
-    }
-    
+}
