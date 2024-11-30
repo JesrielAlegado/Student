@@ -1,14 +1,9 @@
 package studentviolation2e;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class Violation {
     Scanner sc = new Scanner(System.in);
@@ -18,6 +13,10 @@ public class Violation {
         int action;
      do {
         try {
+            System.out.println("\n-------------------------------------------------");
+            System.out.println("                 == VIOLATION ==");
+            System.out.println("-------------------------------------------------");   
+                
             System.out.println("1. ADD");
             System.out.println("2. VIEW");
             System.out.println("3. UPDATE");
@@ -78,30 +77,7 @@ public class Violation {
             }
         }
 
-        String date = "";
-        while (true) {
-            System.out.print("Enter Date (YYYY-MM-DD format): ");
-            date = sc.nextLine();
-
-            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
-            Pattern pattern = Pattern.compile(dateRegex);
-            Matcher matcher = pattern.matcher(date);
-
-            if (!matcher.matches()) {
-                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
-                continue;
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false);
-            try {
-                sdf.parse(date);
-                break;
-            } catch (ParseException e) {
-                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
-            }
-        }
-
+       
         String sever;
         while (true) {
             System.out.print("Enter Severity: ");
@@ -113,16 +89,17 @@ public class Violation {
             }
         }
 
-        String sql = "INSERT INTO VIOLATION (vio_type, date, severity) VALUES (?, ?, ?)";
-        conf.addRecord(sql, viotype, date, sever);
+        String sql = "INSERT INTO VIOLATION (vio_type, severity) VALUES (?, ?)";
+        conf.addRecord(sql, viotype, sever);
     }
 
     public void viewViolation() {
         System.out.println("");
-        System.out.println("====================================== VIOLATION LIST =======================================");
+        System.out.println("=========================== VIOLATION LIST ===========================");
+      
         String qry = "SELECT * FROM VIOLATION";
-        String[] header = {"ID", "Violation Type", "Date", "Severity"};
-        String[] column = {"v_id", "vio_type", "date", "severity"};
+        String[] header = {"ID", "Violation Type", "Severity"};
+        String[] column = {"v_id", "vio_type", "severity"};
         conf.viewRecords(qry, header, column);
     }
 
@@ -149,30 +126,6 @@ public class Violation {
             }
         }
 
-        String date = "";
-        while (true) {
-            System.out.print("Enter Date (YYYY-MM-DD format): ");
-            date = sc.nextLine();
-
-            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
-            Pattern pattern = Pattern.compile(dateRegex);
-            Matcher matcher = pattern.matcher(date);
-
-            if (!matcher.matches()) {
-                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
-                continue;
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false);
-            try {
-                sdf.parse(date);
-                break;
-            } catch (ParseException e) {
-                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
-            }
-        }
-
         String sever;
         while (true) {
             System.out.print("Enter Severity: ");
@@ -184,8 +137,8 @@ public class Violation {
             }
         }
 
-        String qry = "UPDATE VIOLATION SET vio_type = ?, date = ?, severity = ? WHERE v_id = ?";
-        conf.updateRecord(qry, viotype, date, sever, vid);
+        String qry = "UPDATE VIOLATION SET vio_type = ?, severity = ? WHERE v_id = ?";
+        conf.updateRecord(qry, viotype, sever, vid);
     }
 
     private void deleteViolation() {

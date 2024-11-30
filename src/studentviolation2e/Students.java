@@ -11,6 +11,10 @@ public class Students {
         int action;
         do {
             try {
+            System.out.println("\n-------------------------------------------------");
+            System.out.println("                  == STUDENT ==");
+            System.out.println("-------------------------------------------------");   
+                
             System.out.println("1. ADD");
             System.out.println("2. VIEW");
             System.out.println("3. UPDATE");
@@ -185,4 +189,5 @@ public class Students {
             return phoneNumber.matches("\\d+"); 
         }
     
+       
 }

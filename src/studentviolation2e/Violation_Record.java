@@ -1,11 +1,9 @@
 package studentviolation2e; 
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Violation_Record {
     Scanner sc = new Scanner(System.in);
@@ -17,6 +15,10 @@ public class Violation_Record {
         int action;
         do {
             try {
+                System.out.println("\n-------------------------------------------------");
+                System.out.println("              == VIOLATION RECORD ==");
+                System.out.println("-------------------------------------------------");   
+                
                 System.out.println("1. ADD");
                 System.out.println("2. VIEW");
                 System.out.println("3. UPDATE");
@@ -39,7 +41,6 @@ public class Violation_Record {
                     case 3:
                         viewVioRec();
                         updateVioRec();
-                        viewVioRec();
                         break;
                         
                     case 4:
@@ -69,10 +70,10 @@ public class Violation_Record {
 
         int sid = getValidId("SELECT s_id FROM STUDENT WHERE s_id = ?", "Student");
 
-        Staff st = new Staff();
-        st.viewStaff();
+        Complainant com = new Complainant();
+        com.viewComplainant();
 
-        int stid = getValidId("SELECT st_id FROM STAFF WHERE st_id = ?", "Staff");
+        int cid = getValidId("SELECT c_id FROM COMPLAINANT WHERE c_id = ?", "Complainant");
 
         Violation vio = new Violation();
         vio.viewViolation();
@@ -90,46 +91,28 @@ public class Violation_Record {
             }
         }
          
-        String date = "";
-        while (true) {
-            System.out.print("Enter Date (YYYY-MM-DD format): ");
-            date = sc.nextLine();
+        
+         LocalDate currdate = LocalDate.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            String date = currdate.format(format);
 
-            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
-            Pattern pattern = Pattern.compile(dateRegex);
-            Matcher matcher = pattern.matcher(date);
-
-            if (!matcher.matches()) {
-                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
-                continue;
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false);
-            try {
-                sdf.parse(date);
-                break;
-            } catch (ParseException e) {
-                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
-            }
-        }             
         
         String status = getValidStatus();
 
-        String vioqry = "INSERT INTO VIOLATION_RECORD (s_id, st_id, v_id, action_taken, date_resolved, status) VALUES (?, ?, ?, ?, ?, ?)";
-        conf.addRecord(vioqry, sid, stid, vid, action, date, status);
+        String vioqry = "INSERT INTO VIOLATION_RECORD (s_id, c_id, v_id, action_taken, date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        conf.addRecord(vioqry, sid, cid, vid, action, date, status);
     }
 
     public void viewVioRec() {
         System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         System.out.println("                                                                   == VIOLATION RECORDS LIST ==");
-        String qry = "SELECT vr_id, s_name, st_name, vio_type, action_taken, date_resolved, status FROM VIOLATION_RECORD "
+        String qry = "SELECT vr_id, s_name, c_name, vio_type, action_taken, date, status FROM VIOLATION_RECORD "
                 + "LEFT JOIN STUDENT ON STUDENT.s_id = VIOLATION_RECORD.s_id "
-                + "LEFT JOIN STAFF ON STAFF.st_id = VIOLATION_RECORD.st_id "
+                + "LEFT JOIN COMPLAINANT ON COMPLAINANT.c_id = VIOLATION_RECORD.c_id "
                 + "LEFT JOIN VIOLATION ON VIOLATION.v_id = VIOLATION_RECORD.v_id";
         
-        String[] header = {"VRID", "Student", "Staff", "Violation", "Action Taken", "Date Resolved", "Status"};
-        String[] column = {"vr_id", "s_name", "st_name", "vio_type", "action_taken", "date_resolved", "status"};
+        String[] header = {"VRID", "Student", "Complainant", "Violation", "Action Taken", "Date", "Status"};
+        String[] column = {"vr_id", "s_name", "c_name", "vio_type", "action_taken", "date", "status"};
         
         conf.viewRecords(qry, header, column);
     }
@@ -145,9 +128,13 @@ public class Violation_Record {
             vrid = sc.nextInt();
             sc.nextLine();
         }
-
-        int sid = getValidId("SELECT s_id FROM STUDENT WHERE s_id = ?", "Student");
-        int stid = getValidId("SELECT st_id FROM STAFF WHERE st_id = ?", "Staff");
+        
+        Complainant com = new Complainant();
+        com.viewComplainant();     
+        int cid = getValidId("SELECT c_id FROM COMPLAINANT WHERE c_id = ?", "Complainant");
+        
+        Violation vio = new Violation();
+        vio.viewViolation();
         int vid = getValidId("SELECT v_id FROM VIOLATION WHERE v_id = ?", "Violation");
 
         String action;
@@ -161,34 +148,14 @@ public class Violation_Record {
             }
         }
          
-        String date = "";
-        while (true) {
-            System.out.print("Enter Date (YYYY-MM-DD format): ");
-            date = sc.nextLine();
+         LocalDate currdate = LocalDate.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            String date = currdate.format(format);
 
-            String dateRegex = "^\\d{4}-\\d{2}-\\d{2}$";
-            Pattern pattern = Pattern.compile(dateRegex);
-            Matcher matcher = pattern.matcher(date);
-
-            if (!matcher.matches()) {
-                System.out.println("Invalid input. Please enter a valid date in the format YYYY-MM-DD.\n");
-                continue;
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false);
-            try {
-                sdf.parse(date);
-                break;
-            } catch (ParseException e) {
-                System.out.println("Invalid date. Please enter a valid date in the format YYYY-MM-DD.\n");
-            }
-        }             
-        
         String status = getValidStatus();
 
-        String qry = "UPDATE VIOLATION_RECORD SET s_id = ?, st_id = ?, v_id = ?, action_taken = ?, date_resolved = ?, status = ? WHERE vr_id = ?";
-        conf.updateRecord(qry, sid, stid, vid, action, date, status, vrid);
+        String qry = "UPDATE VIOLATION_RECORD SET c_id = ?, v_id = ?, action_taken = ?, date = ?, status = ? WHERE vr_id = ?";
+        conf.updateRecord(qry, cid, vid, action, date, status, vrid);
     }
 
     private void deleteVioRec() {

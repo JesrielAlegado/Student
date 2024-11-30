@@ -9,7 +9,7 @@ public class StudentViolation2E {
         Scanner sc = new Scanner(System.in);
         
         Students st = new Students();
-        Staff sts = new Staff();
+        Complainant com = new Complainant();
         Violation vio = new Violation();
         Violation_Record viorec = new Violation_Record();
         Report rep = new Report();
@@ -22,7 +22,7 @@ public class StudentViolation2E {
                 System.out.println("------------------------------------------------------------");
    
                 System.out.println("1. STUDENTS ");
-                System.out.println("2. STAFF");
+                System.out.println("2. COMPLAINANT");
                 System.out.println("3. VIOLATION ");
                 System.out.println("4. VIOLATION RECORD ");
                 System.out.println("5. REPORT ");
@@ -38,7 +38,7 @@ public class StudentViolation2E {
                         break;
                     
                     case 2:
-                        sts.stafftransac();
+                        com.comtransac();
                         break;
                         
                     case 3:
@@ -70,4 +70,5 @@ public class StudentViolation2E {
 
         sc.close();
     }
+    
 }

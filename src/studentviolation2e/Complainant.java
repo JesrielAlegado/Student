@@ -3,14 +3,18 @@ package studentviolation2e;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Staff {
+public class Complainant {
     Scanner sc = new Scanner(System.in);
     config conf = new config();
 
-    public void stafftransac() {
+    public void comtransac() {
         int action;
         do {
             try {
+                System.out.println("\n-------------------------------------------------");
+                System.out.println("                == COMPLAINANT ==");
+                System.out.println("-------------------------------------------------");                
+                
                 System.out.println("1. ADD");
                 System.out.println("2. VIEW");
                 System.out.println("3. UPDATE");
@@ -23,24 +27,22 @@ public class Staff {
 
                 switch(action) {
                     case 1:
-                        addStaff();
-                        viewStaff();
+                        addComplainant();
                         break;
 
                     case 2:
-                        viewStaff();
+                        viewComplainant();
                         break;
 
                     case 3:
-                        viewStaff();
-                        updateStaff();
-                        viewStaff();
+                        viewComplainant();
+                        updateComplainant();
                         break;
 
                     case 4:
-                        viewStaff();
-                        deleteStaff();
-                        viewStaff();
+                        viewComplainant();
+                        deleteComplainant();
+                        viewComplainant();
                         break;
 
                     case 5:
@@ -59,10 +61,11 @@ public class Staff {
         } while(action != 5);
     }
 
-    public void addStaff() {
+    
+    public void addComplainant() {
         String name;
         while (true) {
-            System.out.print("Enter Staff Name: ");
+            System.out.print("Enter Complainant Name: ");
             name = sc.nextLine();
             if (name.trim().isEmpty()) {
                 System.out.println("Name cannot be empty. Please enter a valid name.\n");
@@ -71,12 +74,12 @@ public class Staff {
             }
         }
 
-        String pos;
+        String prog;
         while (true) {
-            System.out.print("Enter Position: ");
-            pos = sc.nextLine();
-            if (pos.trim().isEmpty()) {
-                System.out.println("Position cannot be empty. Please enter a valid position.\n");
+            System.out.print("Enter Program: ");
+            prog = sc.nextLine();
+            if (prog.trim().isEmpty()) {
+                System.out.println("Program cannot be empty. Please enter a valid program.\n");
             } else {
                 break;
             }
@@ -94,33 +97,33 @@ public class Staff {
             }
         }
 
-        String sql = "INSERT INTO STAFF (st_name, position, contact) VALUES (?, ?, ?)";
-        conf.addRecord(sql, name, pos, pnum);
+        String sql = "INSERT INTO COMPLAINANT (c_name, program, contact) VALUES (?, ?, ?)";
+        conf.addRecord(sql, name, prog, pnum);
     }
 
-    public void viewStaff() {
-        System.out.println("\n======================================== STAFF LIST =========================================");
-        String qry = "SELECT * FROM STAFF";
-        String[] header = {"ID", "Name", "Position", "Contact Number"};
-        String[] column = {"st_id", "st_name", "position", "contact"};
+    public void viewComplainant() {
+        System.out.println("\n===================================== COMPLAINANT LIST ======================================");
+        String qry = "SELECT * FROM COMPLAINANT";
+        String[] header = {"ID", "Name", "Program", "Contact Number"};
+        String[] column = {"c_id", "c_name", "program", "contact"};
         conf.viewRecords(qry, header, column);
     }
 
-    private void updateStaff() {
+    private void updateComplainant() {
         System.out.print("Enter ID to Update: ");
-        int sid = sc.nextInt();
+        int cid = sc.nextInt();
         sc.nextLine();
 
-        while(conf.getSingleValue("SELECT st_id FROM STAFF WHERE st_id = ?", sid) == 0) {
+        while(conf.getSingleValue("SELECT c_id FROM COMPLAINANT WHERE c_id = ?", cid) == 0) {
             System.out.println("Selected ID doesn't exist! ");
             System.out.print("Select Staff ID Again: ");
-            sid = sc.nextInt();
+            cid = sc.nextInt();
             sc.nextLine();
         }
 
         String name;
         while (true) {
-            System.out.print("Enter Staff Name: ");
+            System.out.print("Enter Complainant Name: ");
             name = sc.nextLine();
             if (name.trim().isEmpty()) {
                 System.out.println("Name cannot be empty. Please enter a valid name.\n");
@@ -129,12 +132,12 @@ public class Staff {
             }
         }
 
-        String pos;
+        String prog;
         while (true) {
-            System.out.print("Enter Position: ");
-            pos = sc.nextLine();
-            if (pos.trim().isEmpty()) {
-                System.out.println("Position cannot be empty. Please enter a valid position.\n");
+            System.out.print("Enter Program: ");
+            prog = sc.nextLine();
+            if (prog.trim().isEmpty()) {
+                System.out.println("Program cannot be empty. Please enter a valid program.\n");
             } else {
                 break;
             }
@@ -152,24 +155,24 @@ public class Staff {
             }
         }
 
-        String qry = "UPDATE STAFF SET st_name = ?, position = ?, contact = ? WHERE st_id = ?";
-        conf.updateRecord(qry, name, pos, pnum, sid);
+        String qry = "UPDATE COMPLAINANT SET c_name = ?, program = ?, contact = ? WHERE c_id = ?";
+        conf.updateRecord(qry, name, prog, pnum, cid);
     }
 
-    private void deleteStaff() {
+    private void deleteComplainant() {
         System.out.print("Enter ID to Delete: ");
-        int sid = sc.nextInt();
+        int cid = sc.nextInt();
         sc.nextLine();
 
-        while(conf.getSingleValue("SELECT st_id FROM STAFF WHERE st_id = ?", sid) == 0) {
+        while(conf.getSingleValue("SELECT c_id FROM COMPLAINANT WHERE c_id = ?", cid) == 0) {
             System.out.println("Selected ID doesn't exist! ");
             System.out.print("Select Staff ID Again: ");
-            sid = sc.nextInt();
+            cid = sc.nextInt();
             sc.nextLine();
         }
 
-        String qry = "DELETE FROM STAFF WHERE st_id = ?";
-        conf.deleteRecord(qry, sid);
+        String qry = "DELETE FROM COMPLAINANT WHERE c_id = ?";
+        conf.deleteRecord(qry, cid);
     }
 
     private boolean isValidPhoneNumber(String phoneNumber) {
