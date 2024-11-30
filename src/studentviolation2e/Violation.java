@@ -65,6 +65,7 @@ public class Violation {
         } while(action != 5);
     }
 
+    
     public void addViolation() {
         String viotype;
         while (true) {

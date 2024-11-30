@@ -91,7 +91,6 @@ public class Violation_Record {
             }
         }
          
-        
          LocalDate currdate = LocalDate.now();
             DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy");
             String date = currdate.format(format);

@@ -61,7 +61,8 @@ public class Complainant {
         } while(action != 5);
     }
 
-    
+
+
     public void addComplainant() {
         String name;
         while (true) {
