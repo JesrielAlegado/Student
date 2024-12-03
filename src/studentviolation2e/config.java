@@ -222,7 +222,7 @@ public void deleteRecord(String sql, Object... values) {
         Connection conn = null;
         try {
             // Using the SQLite JDBC driver with the same URL as in connectDB
-            conn = DriverManager.getConnection("jdbc:sqlite:D:student.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:student.db");
         } catch (SQLException e) {
             System.out.println("Failed to connect to the database: " + e.getMessage());
             e.printStackTrace();
